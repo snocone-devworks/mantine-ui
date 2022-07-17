@@ -8,7 +8,7 @@ import ComponentsPage from './pages/ComponentsPage';
 function App() {
   return (
     <AppContainer
-      appName='@snocone/mantine-ui'
+      appName='@snoconedev/mantine-ui'
       closeAfterRoute
       displayThemeToggle
       navbarContent={

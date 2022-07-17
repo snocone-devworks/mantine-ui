@@ -13,7 +13,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, 'lib/index.tsx'),
-      name: '@snocone/mantine-ui',
+      name: '@snoconedev/mantine-ui',
       formats: ['es', 'umd'],
       fileName: 'mantine-ui',
     },

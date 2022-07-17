@@ -9,7 +9,7 @@ const container = document.getElementById('root');
 const root = createRoot(container!);
 
 root.render(
-  <ThemeProvider appThemeName='@snocone/mantine-ui_theme'>
+  <ThemeProvider appThemeName='@snoconedev/mantine-ui_theme'>
     <BrowserRouter>
       <App />
     </BrowserRouter>
