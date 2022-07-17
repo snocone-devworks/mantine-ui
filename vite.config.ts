@@ -13,9 +13,9 @@ export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, 'lib/index.tsx'),
-      name: '@scope/package-name',
+      name: '@snocone/mantine-ui',
       formats: ['es', 'umd'],
-      fileName: 'package-name',
+      fileName: 'mantine-ui',
     },
     outDir: './dist',
     rollupOptions: {
@@ -24,6 +24,13 @@ export default defineConfig({
         'react-dom',
         'react-router-dom',
         'react-router',
+        '@mantine/core',
+        '@mantine/dates',
+        '@mantine/hooks',
+        '@mantine/notifications',
+        'dayjs',
+        'react-icons',
+        'zustand'
       ],
       output: {
         globals: {
