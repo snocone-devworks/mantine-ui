@@ -6,10 +6,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
@@ -18,5 +16,5 @@ jobs:
         - run: npm install && npm run build
         - run: npm version ${{ github.event.release.tag_name }} --allow-same-version --no-git-tag-version
         - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          env:
+            NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
