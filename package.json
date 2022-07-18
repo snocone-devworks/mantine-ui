@@ -4,22 +4,22 @@
   "name": "@snoconedev/mantine-ui",
   "author": "Jeremy Hayworth",
   "repository": {
-    "url": ""
+    "url": "https://github.com/snocone-devworks/mantine-ui"
   },
   "files": [
     "dist"
   ],
   "types": "./dist/lib/index.d.ts",
   "main": "./dist/mantine-ui.umd.js",
-  "module": "./dist/mantine-ui.es.js",
+  "module": "./dist/mantine-ui.mjs",
   "exports": {
     ".": {
-      "import": "./dist/mantine-ui.es.js",
+      "import": "./dist/mantine-ui.mjs",
       "require": "./dist/mantine-ui.umd.js"
     }
   },
   "engines": {
-    "node": ">=12"
+    "node": ">=16"
   },
   "scripts": {
     "dev": "vite",
