@@ -1,6 +1,6 @@
 import React from 'react'
 import { ActionIconVariant, ColorScheme, MantineColor, MantineGradient, MantineNumberSize, MantineThemeOverride } from '@mantine/core';
-import { Target, TargetAndTransition, Transition, VariantLabels, Variants } from 'framer-motion';
+import { AnimationControls, Target, TargetAndTransition, Transition, VariantLabels, Variants } from 'framer-motion';
 
 export type BreakpointName = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -45,6 +45,7 @@ export type MessageWrappersConfig = {
 
 export type MotionConfig = {
   initial?: boolean | Target | VariantLabels;
+  animate?: AnimationControls | TargetAndTransition | VariantLabels | boolean;
   exit?: TargetAndTransition | VariantLabels;
   mode?: 'wait' | 'sync' | 'popLayout';
   variants?: Variants;
