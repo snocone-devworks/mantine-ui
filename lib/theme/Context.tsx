@@ -55,8 +55,7 @@ export const MantineUIThemeProvider = (props: MantineUIThemeProviderProps) => {
 
   }, [props])
 
-  return 
-  (
+  return (
     <MantineUIThemeContextInfo.Provider
       value={{
         applyGradients: applyGradients,

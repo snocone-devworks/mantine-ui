@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 import react from '@vitejs/plugin-react';
-const path = require('path');
+import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [
@@ -10,9 +10,8 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'lib/index.tsx'),
+      entry: resolve(__dirname, 'lib/index.tsx'),
       name: '@snoconedev/mantine-ui',
-      formats: ['es', 'umd'],
       fileName: 'mantine-ui',
     },
     outDir: './dist',
@@ -29,6 +28,7 @@ export default defineConfig({
         'dayjs',
         'react-icons',
         'framer-motion',
+        'uuid',
         'zustand'
       ],
       output: {
