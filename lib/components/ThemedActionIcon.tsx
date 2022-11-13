@@ -1,99 +1,62 @@
-import { ActionIcon, ActionIconVariant, LoaderProps, MantineColor, MantineGradient, MantineNumberSize, ThemeIconVariant, Tooltip } from '@mantine/core';
-import React, { useEffect, useState } from 'react'
-import { useThemeContext } from '../theme';
-import { ThemeColor } from '../theme/types';
+import { ActionIcon, ActionIconVariant, LoaderProps, MantineColor, MantineGradient, MantineNumberSize, Tooltip } from '@mantine/core';
+import React, { useMemo } from 'react'
+import { useMantineUITheme } from '../hooks/useMantineUITheme';
+import { ThemeColor } from '../types';
 import ThemedIcon from './ThemedIcon';
 
 type Props = {
   children: React.ReactNode;
+  className?: string;
   color: ThemeColor;
   disabled?: boolean;
-  radius?: MantineNumberSize;
-  size?: MantineNumberSize;
   loading?: boolean;
   loaderProps?: LoaderProps;
-  tooltip?: string;
+  radius?: MantineNumberSize;
+  size?: MantineNumberSize;
+  style?: React.CSSProperties;
+  tooltip?: React.ReactNode;
   variant?: ActionIconVariant | 'gradient';
   onClick(): void | Promise<void>;
 }
 
-const ThemedActionIcon = (props: Props) => {
-  if (props.tooltip && !props.disabled) {
-    return (
-      <Tooltip
-        withArrow
-        label={props.tooltip}
-        title={props.tooltip}
-      >
-        <IconButton {...props}>
-          {props.children}
-        </IconButton>
-      </Tooltip>
-    )
-  }
-  return (
-    <IconButton {...props}>
-      {props.children}
-    </IconButton>
-  )
-}
-
-const IconButton = (props: Props) => {
-  const { colors, gradients, applyGradients } = useThemeContext();
-  const [gradient, setGradient] = useState<MantineGradient>({ from: 'cyan', to: 'indigo' });
-  const [actionVariant, setActionVariant] = useState<ActionIconVariant | undefined>(undefined);
-  const [iconVariant, setIconVariant] = useState<ThemeIconVariant | undefined>(undefined);
-  const [color, setColor] = useState<MantineColor>('blue');
-
-  useEffect(() => {
-    setColor(colors[props.color]);
-  }, [props.color, colors])
-
-  useEffect(() => {
-    setGradient(gradients[props.color]);
-  }, [props.color, gradients])
-
-  useEffect(() => {
-    switch(props.variant) {
-      case 'hover':
-        setActionVariant('hover');
-        break;
-      case 'light':
-        setActionVariant('light');
-        break;
-      case 'outline':
-        setActionVariant('outline');
-        break;
-      case 'gradient':
-      case 'transparent':
-        setActionVariant('transparent');
-        break;
-      default:
-        setActionVariant('filled');
-        break;
-    }
-
+const ThemedActionIcon = React.forwardRef<HTMLButtonElement, Props>((props, ref) => {
+  const { colors, gradients, applyGradients } = useMantineUITheme();
+  const color = useMemo<MantineColor>(() => colors[props.color], [props.color, colors])
+  const gradient = useMemo<MantineGradient>(() => gradients[props.color], [props.color, gradients])
+  const variant = useMemo<ActionIconVariant | undefined>(() => {
+    if (props.variant === 'subtle') return 'subtle';
+    if (props.variant === 'light') return 'light';
+    if (props.variant === 'outline') return 'outline';
+    if (props.variant && ['gradient', 'transparent'].includes(props.variant)) return 'transparent';
+    return 'filled';
   }, [props.variant])
-
-  const isGradient = (): boolean => {
+  const isGradient = useMemo<boolean>(() => {
     if (!gradient || props.disabled) return false;
     if (props.variant === 'gradient' || (!props.variant && applyGradients)) return true;
     return false;
-  }
+  }, [gradient, props.disabled, props.variant, applyGradients])
 
-  if (props.tooltip) {
-    return (
+  return (
+    <Tooltip
+      withArrow
+      withinPortal
+      label={props.tooltip}
+      disabled={props.disabled}
+    >
       <ActionIcon
+        ref={ref}
+        className={props.className}
+        color={color}
         disabled={props.disabled}
         size={props.size}
-        color={color}
         radius={props.radius ?? 'md'}
-        loaderProps={props.loaderProps}
         loading={props.loading}
-        variant={actionVariant}
+        loaderProps={props.loaderProps}
+        variant={variant}
+        style={props.style}
         onClick={() => props.onClick()}
       >
-        {isGradient() && (
+        {isGradient && (
           <ThemedIcon
             color={props.color}
             variant='gradient'
@@ -101,53 +64,20 @@ const IconButton = (props: Props) => {
             size={props.size}
             loading={props.loading}
             loaderProps={props.loaderProps}
-            tooltip={props.tooltip}
           >
-            {props.children}
+            {props.children}  
           </ThemedIcon>
         )}
-        {!isGradient() && (
+        {!isGradient && (
           <>
           {props.children}
           </>
         )}
       </ActionIcon>
-    )
-  }
-
-
-  return (
-    <ActionIcon
-      disabled={props.disabled}
-      size={props.size}
-      color={color}
-      radius={props.radius ?? 'md'}
-      loaderProps={props.loaderProps}
-      loading={props.loading}
-      variant={actionVariant}
-      onClick={() => props.onClick()}
-    >
-      {isGradient() && (
-        <ThemedIcon
-          color={props.color}
-          variant='gradient'
-          radius={props.radius}
-          size={props.size}
-          loading={props.loading}
-          loaderProps={props.loaderProps}
-          tooltip={props.tooltip}
-        >
-          {props.children}
-        </ThemedIcon>
-      )}
-      {!isGradient() && (
-        <>
-        {props.children}
-        </>
-      )}
-    </ActionIcon>
-
+    </Tooltip>
   )
-}
+});
+
+ThemedActionIcon.displayName = 'ThemedActionIcon';
 
 export default ThemedActionIcon

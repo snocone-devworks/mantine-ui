@@ -1,7 +1,7 @@
 import { Button, useMantineTheme } from '@mantine/core';
-import React, { useEffect, useState } from 'react'
+import React, { useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom';
-import { useThemeColors } from '../../theme';
+import { useThemeColors } from '../../hooks/useThemeColors';
 
 type Props = {
   condensed?: boolean;
@@ -14,23 +14,15 @@ type Props = {
 
 const NavItem = (props: Props) => {
   const theme = useMantineTheme();
-  const location = useLocation();
-  const [active, setActive] = useState<boolean>();
   const { primary } = useThemeColors();
-
-  useEffect(() => {
-    if (props.exact) {
-      setActive(location.pathname === props.path);
-    } else {
-      setActive(location.pathname.includes(props.path))
-    }
-  }, [props.exact, props.path, location.pathname]);
-
-  const color = (): string => {
-    return active 
-    ? primary
-    : theme.colorScheme === 'dark' ? theme.white : theme.black;
-  }
+  const { pathname } = useLocation();
+  const active = useMemo<boolean>(() => {
+    if (props.exact) return pathname === props.path
+    return pathname.toLocaleLowerCase().includes(props.path.toLocaleLowerCase());
+  }, [pathname, props.path, props.exact])
+  const color = useMemo<string>(() => {
+    return active ? primary : theme.colorScheme === 'dark' ? theme.white : theme.black;
+  }, [active, theme])
 
   if (props.disabled) {
     return (
@@ -46,10 +38,10 @@ const NavItem = (props: Props) => {
             justifyContent: 'flex-start'
           },
           label: {
-            color: color(),
+            color: color
           },
           leftIcon: {
-            color: color(),
+            color: color
           }
         })}
       >
@@ -73,10 +65,10 @@ const NavItem = (props: Props) => {
           justifyContent: 'flex-start'
         },
         label: {
-          color: color(),
+          color: color
         },
         leftIcon: {
-          color: color(),
+          color: color
         }
       })}
     >

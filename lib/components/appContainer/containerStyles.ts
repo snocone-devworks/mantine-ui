@@ -1,20 +1,20 @@
 import { createStyles } from "@mantine/core";
 
-export const useStyles = createStyles((theme) => {
+export const useContainerStyles = createStyles((theme) => {
   return {
     shell: {
       position: 'relative',
       display: 'flex',
       flexDirection: 'column',
-      flex: '1 1 auto',
-      minHeight: '100vh'
+      flex: '1 1 auto'
     },
     main: {
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      minHeight: 'fit-content',
     },
     headerContent: {
-      display: 'flex',
+      display: 'flex', 
       flex: '1 1 auto',
       flexDirection: 'row',
     },
@@ -24,17 +24,19 @@ export const useStyles = createStyles((theme) => {
       justifyContent: 'flex-end',
     },
     chipContent: {
-      display: 'flex',
-      flexDirection: 'row', 
+      display: 'flex', 
+      flexDirection: 'row',
       alignItems: 'center',
+      background: 'transparent',
+      backgroundColor: 'transparent',
     },
     smallIcon: {
-      height: '28px',
-      width: '28px'
+      height: '1.8rem',
+      width: '1.8rem',
     },
     icon: {
-      height: '20px',
-      width: '20px',
+      height: '1.2rem',
+      width: '1.2rem',
       marginLeft: '0.6rem',
       color: theme.colorScheme === 'dark' ? theme.colors.yellow[5] : theme.colors.violet[5]
     }

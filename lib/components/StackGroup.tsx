@@ -1,6 +1,7 @@
-import { Group, GroupPosition, MantineNumberSize } from '@mantine/core';
-import React, { useEffect, useState } from 'react'
-import { BreakpointName, useBreakpoints } from '../hooks/useBreakpoints';
+import { Group, GroupPosition, MantineNumberSize, Stack } from '@mantine/core';
+import React, { useMemo } from 'react'
+import { useDeviceSize } from '../hooks/useDeviceSize';
+import { BreakpointName } from '../types';
 
 type Props = {
   align?: React.CSSProperties['alignItems'];
@@ -13,33 +14,40 @@ type Props = {
   style?: React.CSSProperties;
 }
 
-const StackGroup = ({align, breakpoint, children, grow, noWrap, position, spacing, style}: Props) => {
-  const { deviceSize } = useBreakpoints();
-  const [direction, setDirection] = useState<'row' | 'column'>('row');
-  
-  useEffect(() => {
-    let newDirection: 'row' | 'column' = 'row';
+const StackGroup = (props: Props) => {
+  const { deviceSize } = useDeviceSize();
+  const direction = useMemo<'row' | 'column'>(() => {
+    if (deviceSize === 'xs' && props.breakpoint === 'xs') return 'column';
+    if (props.breakpoint === 'sm' && ['xs', 'sm'].includes(deviceSize)) return 'column';
+    if (props.breakpoint === 'md' && ['xs', 'sm', 'md'].includes(deviceSize)) return 'column';
+    if (props.breakpoint === 'lg' && ['xs', 'sm', 'md', 'lg'].includes(deviceSize)) return 'column';
+    if (props.breakpoint === 'xl') return 'column';
+    return 'row'
+  }, [props.breakpoint, deviceSize])
 
-    if (breakpoint === 'xs' && deviceSize === 'xs') newDirection = 'column';
-    if (breakpoint === 'sm' && ['xs', 'sm'].includes(deviceSize)) newDirection = 'column';
-    if (breakpoint === 'md' && ['xs', 'sm', 'md'].includes(deviceSize)) newDirection = 'column';
-    if (breakpoint === 'lg' && ['xs', 'sm', 'md', 'lg'].includes(deviceSize)) newDirection = 'column';
-    if (breakpoint === 'xl') newDirection = 'column';
-
-    setDirection(newDirection);
-  }, [deviceSize, breakpoint])
+  if (direction === 'column') {
+    return (
+      <Stack
+        align={props.position}
+        justify={props.align}
+        spacing={props.spacing}
+        style={props.style}
+      >
+        {props.children}
+      </Stack>
+    )
+  }
 
   return (
     <Group
-      align={align}
-      direction={direction}
-      grow={grow}
-      noWrap={noWrap}
-      position={position}
-      spacing={spacing}
-      style={style}
+      align={props.align}
+      grow={props.grow}
+      noWrap={props.noWrap}
+      position={props.position}
+      spacing={props.spacing}
+      style={props.style}
     >
-      {children}
+      {props.children}
     </Group>
   )
 }

@@ -1,11 +1,10 @@
-import { Collapse, Divider, Grid, Text, useMantineTheme } from '@mantine/core';
+import { Collapse, Divider, SimpleGrid, Text } from '@mantine/core';
 import React, { useEffect, useState } from 'react'
-import { RiArrowDownSFill, RiArrowUpSFill } from 'react-icons/ri';
-
-type SectionState = 'collapsed' | 'expanded';
+import { MdExpandLess, MdExpandMore } from 'react-icons/md';
+import { useThemeColors } from '../../hooks/useThemeColors';
 
 type Props = {
-  defaultState?: SectionState;
+  defaultState?: 'collapsed' | 'expanded';
   displayBottomDivider?: boolean;
   displayTopDivider?: boolean;
   children?: React.ReactNode;
@@ -14,41 +13,38 @@ type Props = {
 }
 
 const NavSection = (props: Props) => {
-  const [open, setOpen] = useState<boolean>(true);
+  const [opened, setOpened] = useState<boolean>(true);
   const [hasChanged, setHasChanged] = useState<boolean>(false);
-  const theme = useMantineTheme();
+  const { textPrimary } = useThemeColors();
 
   useEffect(() => {
     if (!hasChanged) {
-      setOpen(props.defaultState === 'collapsed' ? false : true);
+      setOpened(props.defaultState === 'collapsed' ? false : true);
       setHasChanged(true);
     }
-  }, [props.defaultState])
+  },[props.defaultState])
 
   return (
     <>
-    {props.displayTopDivider && (
-      <Divider />
-    )}
-    <Grid.Col
-      span={12}
-      style={{display: 'flex', flexDirection: 'row', alignItems: 'center', cursor: 'pointer'}}
+    {props.displayTopDivider && (<Divider />)}
+    <SimpleGrid 
+      cols={1} 
+      style={{display: 'flex', flexDirection: 'row', alignItems: 'center', cursor: 'pointer', margin: '0', padding: '0.6rem'}}
+      onClick={() => setOpened(!opened)}
     >
       {
-        open
-        ? <RiArrowUpSFill color={theme.colorScheme === 'dark' ? 'white' : 'black'} style={{height: '1.2rem', width: '1.2rem'}} />
-        : <RiArrowDownSFill color={theme.colorScheme === 'dark' ? 'white' : 'black'} style={{height: '1.2rem', width: '1.2rem'}} />
+        opened
+        ? <MdExpandLess color={textPrimary} size='1.2rem' />
+        : <MdExpandMore color={textPrimary} size='1.2rem' />
       }
-      <Text size='sm' style={{ marginLeft: '0.6rem', color: props.titleColor ?? theme.colorScheme === 'dark' ? theme.white : theme.black}}>
+      <Text size='sm' style={{marginLeft: '0.6rem', color: props.titleColor ?? textPrimary}}>
         {props.title}
       </Text>
-    </Grid.Col>
-    <Collapse in={open} style={{ paddingLeft: '2rem' }}>
+    </SimpleGrid>
+    <Collapse in={opened} style={{paddingLeft: '2rem', margin: '0'}}>
       {props.children}
     </Collapse>
-    {props.displayBottomDivider && (
-      <Divider />
-    )}
+    {props.displayBottomDivider && (<Divider />)}
     </>
   )
 }

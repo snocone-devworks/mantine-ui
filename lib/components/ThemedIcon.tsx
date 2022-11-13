@@ -1,79 +1,53 @@
 import { LoaderProps, MantineColor, MantineGradient, MantineNumberSize, ThemeIcon, ThemeIconVariant, Tooltip } from '@mantine/core';
-import React, { useEffect, useState } from 'react'
-import { useThemeContext } from '../theme';
-import { ThemeColor } from '../theme/types';
+import React, { useMemo } from 'react'
+import { useMantineUITheme } from '../hooks/useMantineUITheme';
+import { ThemeColor } from '../types';
 
 type Props = {
   children: React.ReactNode;
+  className?: string;
   color: ThemeColor;
   disabled?: boolean;
-  radius?: MantineNumberSize;
-  size?: MantineNumberSize;
   loading?: boolean;
   loaderProps?: LoaderProps;
-  tooltip?: string;
+  radius?: MantineNumberSize;
+  size?: MantineNumberSize;
+  style?: React.CSSProperties;
+  tooltip?: React.ReactNode;
   variant?: ThemeIconVariant;
 }
 
-const ThemedIcon = (props: Props) => {
-  const { colors, gradients, applyGradients } = useThemeContext();
-  const [gradient, setGradient] = useState<MantineGradient>({ from: 'cyan', to: 'indigo' });
-  const [color, setColor] = useState<MantineColor>('blue');
-
-  useEffect(() => {
-    if (props.color === 'error') setColor(colors.error);
-    if (props.color === 'info') setColor(colors.info);
-    if (props.color === 'primary') setColor(colors.primary);
-    if (props.color === 'secondary') setColor(colors.secondary);
-    if (props.color === 'success') setColor(colors.success);
-    if (props.color === 'warn') setColor(colors.warn);
-  }, [props.color, colors])
-
-  useEffect(() => {
-    if (props.color === 'error') setGradient(gradients.error);
-    if (props.color === 'info') setGradient(gradients.info);
-    if (props.color === 'primary') setGradient(gradients.primary);
-    if (props.color === 'secondary') setGradient(gradients.secondary);
-    if (props.color === 'success') setGradient(gradients.success);
-    if (props.color === 'warn') setGradient(gradients.warn);
-  }, [props.color, gradients])
-
-  const iconVariant = (): ThemeIconVariant => {
+const ThemedIcon = React.forwardRef<HTMLDivElement | null, Props>((props, ref) => {
+  const { colors, gradients, applyGradients } = useMantineUITheme();
+  const color = useMemo<MantineColor>(() => colors[props.color], [props.color, colors])
+  const gradient = useMemo<MantineGradient>(() => gradients[props.color], [props.color, gradients])
+  const variant = useMemo<ThemeIconVariant>(() => {
     if (props.variant) return props.variant;
-    if (!props.variant && applyGradients) return 'gradient';
-    return 'filled';
-  }
+    return applyGradients ? 'gradient' : 'filled';
+  }, [props.variant, applyGradients])
 
-  if (props.tooltip) {
-    return (
-      <Tooltip
-        withArrow
-        title={props.tooltip}
-        label={props.tooltip}
-      >
-        <ThemeIcon
-          size={props.size}
-          radius={props.radius ?? 'md'}
-          color={props.variant !== 'gradient' ? color : undefined}
-          gradient={props.variant === 'gradient' ? gradient : undefined}
-          variant={iconVariant()}
-        >
-          {props.children}
-        </ThemeIcon>
-      </Tooltip>
-    )
-  }
   return (
-    <ThemeIcon
-      size={props.size}
-      radius={props.radius ?? 'md'}
-      color={props.variant !== 'gradient' ? color : undefined}
-      gradient={props.variant === 'gradient' ? gradient : undefined}
-      variant={iconVariant()}
+    <Tooltip
+      withArrow
+      withinPortal
+      disabled={props.disabled}
+      label={props.tooltip}
     >
-      {props.children}
-    </ThemeIcon>
+      <ThemeIcon
+        ref={ref}
+        size={props.size ?? 'md'}
+        radius={props.size ?? 'md'}
+        color={variant === 'gradient' ? undefined : color}
+        variant={variant}
+        style={props.style}
+        gradient={variant === 'gradient' ? gradient : undefined}
+      >
+        {props.children}
+      </ThemeIcon>
+    </Tooltip>
   )
-}
+})
+
+ThemedIcon.displayName = 'ThemedIcon';
 
 export default ThemedIcon

@@ -1,122 +1,61 @@
-import { Button, ButtonVariant, MantineColor, MantineGradient, SharedButtonProps, Tooltip } from '@mantine/core';
-import React, { useEffect, useState } from 'react'
-import { useThemeContext } from '../theme';
-import { ThemeColor } from '../theme/types';
-import { Callback } from '../types/Callback';
+import { Button, ButtonProps, ButtonVariant, MantineColor, MantineGradient, Tooltip } from '@mantine/core'
+import React, { useMemo } from 'react'
+import { useMantineUITheme } from '../hooks/useMantineUITheme';
+import { ThemeColor } from '../types';
 
-interface Props extends SharedButtonProps {
+interface Props extends ButtonProps {
   children: React.ReactNode;
   color: ThemeColor;
   disabled?: boolean;
-  tooltip?: string;
-  onClick(): Callback<void>;
+  tooltip?: React.ReactNode;
+  onClick(): void | Promise<void>;
 }
 
-const ThemedButton = (props: Props) => {
-  if (props.tooltip && !props.disabled) {
-    return (
-      <Tooltip
-        withArrow
-        title={props.tooltip}
-        label={props.tooltip}
-      >
-        <ButtonComponent {...props}>
-          {props.children}
-        </ButtonComponent>
-      </Tooltip>
-    )
-  }
-  return (
-    <ButtonComponent {...props}>
-      {props.children}
-    </ButtonComponent>
-  )
-}
-
-const ButtonComponent = (props: Props) => {
-  const { colors, gradients, applyGradients } = useThemeContext();
-  const [gradient, setGradient] = useState<MantineGradient>({ from: 'cyan', to: 'indigo' });
-  const [color, setColor] = useState<MantineColor>('blue');
-
-  useEffect(() => {
-    if (props.color === 'error') setColor(colors.error);
-    if (props.color === 'info') setColor(colors.info);
-    if (props.color === 'primary') setColor(colors.primary);
-    if (props.color === 'secondary') setColor(colors.secondary);
-    if (props.color === 'success') setColor(colors.success);
-    if (props.color === 'warn') setColor(colors.warn);
-  }, [props.color, colors])
-
-  useEffect(() => {
-    if (props.color === 'error') setGradient(gradients.error);
-    if (props.color === 'info') setGradient(gradients.info);
-    if (props.color === 'primary') setGradient(gradients.primary);
-    if (props.color === 'secondary') setGradient(gradients.secondary);
-    if (props.color === 'success') setGradient(gradients.success);
-    if (props.color === 'warn') setGradient(gradients.warn);
-  }, [props.color, gradients])
-
-  const buttonVariant = (): ButtonVariant | undefined => {
+const ThemedButton = React.forwardRef<HTMLButtonElement | null, Props>((props, ref) => {
+  const { colors, gradients, applyGradients } = useMantineUITheme();
+  const color = useMemo<MantineColor>(() => colors[props.color], [props.color, colors])
+  const gradient = useMemo<MantineGradient>(() => gradients[props.color], [props.color, gradients])
+  const variant = useMemo<ButtonVariant | undefined>(() => {
     if (props.disabled) return 'default';
     if (props.variant) return props.variant;
     if (applyGradients) return 'gradient';
     if (!props.variant) return 'filled';
     return undefined;
-  }
-
-  if (props.tooltip) {
-    return (
-      <Tooltip
-        withArrow
-        title={props.tooltip}
-        label={props.tooltip}
-      >
-        <Button
-          color={props.variant !== 'gradient' ? color : undefined}
-          size={props.size}
-          type={props.type}
-          leftIcon={props.leftIcon}
-          rightIcon={props.rightIcon}
-          fullWidth={props.fullWidth}
-          radius={props.radius ?? 'md'}
-          variant={buttonVariant()}
-          gradient={buttonVariant() === 'gradient' ? gradient : undefined}
-          uppercase={props.uppercase}
-          compact={props.compact}
-          loading={props.loading}
-          loaderProps={props.loaderProps}
-          loaderPosition={props.loaderPosition}
-          disabled={props.disabled}
-          onClick={() => props.onClick()}
-        >
-          {props.children}
-        </Button>
-      </Tooltip>
-    )
-  }
+  }, [props.disabled, props.variant, applyGradients])
 
   return (
-    <Button
-      color={props.variant !== 'gradient' ? color : undefined}
-      size={props.size}
-      type={props.type}
-      leftIcon={props.leftIcon}
-      rightIcon={props.rightIcon}
-      fullWidth={props.fullWidth}
-      radius={props.radius ?? 'md'}
-      variant={buttonVariant()}
-      gradient={buttonVariant() === 'gradient' ? gradient : undefined}
-      uppercase={props.uppercase}
-      compact={props.compact}
-      loading={props.loading}
-      loaderProps={props.loaderProps}
-      loaderPosition={props.loaderPosition}
+    <Tooltip
+      withArrow
+      withinPortal
       disabled={props.disabled}
-      onClick={() => props.onClick()}
+      label={props.tooltip}
     >
-      {props.children}
-    </Button>
+      <Button
+        ref={ref}
+        color={props.variant === 'gradient' ? undefined : color}
+        disabled={props.disabled}
+        gradient={variant === 'gradient' ? gradient : undefined}
+        size={props.size}
+        radius={props.radius ?? 'md'}
+        loading={props.loading}
+        loaderProps={props.loaderProps}
+        variant={variant}
+        uppercase={props.uppercase}
+        fullWidth={props.fullWidth}
+        leftIcon={props.leftIcon}
+        rightIcon={props.rightIcon}
+        type={props.type}
+        compact={props.compact}
+        loaderPosition={props.loaderPosition}
+        style={props.style}
+        onClick={() => props.onClick()}
+      >
+        {props.children}
+      </Button>
+    </Tooltip>
   )
-}
+})
+
+ThemedButton.displayName = 'ThemedButton';
 
 export default ThemedButton

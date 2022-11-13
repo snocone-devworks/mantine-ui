@@ -1,57 +1,54 @@
-import { Chip, Group, Switch, useMantineTheme } from '@mantine/core';
+import { Box, Group, Switch, Text, useMantineTheme } from '@mantine/core';
 import React from 'react'
-import { RiMoonFill, RiSunFill } from 'react-icons/ri';
-import { useBreakpoints } from '../../hooks/useBreakpoints';
-import { useToggleTheme } from '../../theme'
-import { useStyles } from './styles';
+import { MdDarkMode, MdLightMode } from 'react-icons/md';
+import { useDeviceSize } from '../../hooks/useDeviceSize';
+import { useMantineUITheme } from '../../hooks/useMantineUITheme';
+import { useThemeColors } from '../../hooks/useThemeColors'
+import { useContainerStyles } from './containerStyles';
 
-type Props = {}
-
-const ThemeToggle = (props: Props) => {
-  const toggleTheme = useToggleTheme();
-  const { deviceSize } = useBreakpoints();
-  const { classes } = useStyles();
+const ThemeToggle = () => {
+  const { textPrimary } = useThemeColors();
+  const { toggleColorScheme } = useMantineUITheme();
+  const { deviceSize } = useDeviceSize();
+  const { classes } = useContainerStyles();
   const theme = useMantineTheme();
 
   if (['xs', 'sm'].includes(deviceSize)) {
     return (
-      <Group style={{ gap: '0rem' }}>
-        <RiSunFill className={classes.smallIcon} style={{color: theme.colors.yellow[5]}} />
+      <Group style={{gap: '0rem'}}>
+        <MdLightMode className={classes.smallIcon} style={{color: theme.colors.yellow[5]}} />
         <Switch 
           checked={true}
           size='md'
           color={theme.colorScheme === 'dark' ? 'violet' : 'yellow'}
-          style={{marginLeft: '0.6rem', marginRight: '0.6rem', transform: theme.colorScheme === 'light' ? 'rotate(180deg)' : undefined}}
-          onChange={() => {}}
-          onClick={() => toggleTheme()}
+          style={{marginLeft: '0.6rem', transform: theme.colorScheme === 'light' ? 'rotate(180deg)' : undefined}}
+          onClick={() => toggleColorScheme()}
         />
-        <RiMoonFill className={classes.smallIcon} style={{color: theme.colors.violet[5]}} />
+        <MdDarkMode className={classes.smallIcon} style={{color: theme.colors.violet[5]}} />
       </Group>
     )
   }
+
   return (
-    <Chip
-      value='chip'
-      checked={false}
-      variant='outline'
-      size='lg'
-      styles={(theme) => ({
-        label: {
-          paddingLeft: '0.8rem',
-          paddingRight: '0.4rem',
-        }
-      })}
-      onChange={() => toggleTheme()}
+    <Box
+      sx={{
+        border: theme.colorScheme === 'dark' ? `1px solid #fff` : `1px solid #000`,
+        borderRadius: '1.2rem',
+        display: 'flex',
+        flexDirection: 'row', 
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '0.4rem 0.8rem',
+        cursor: 'pointer'
+      }}
+      onClick={() => toggleColorScheme()}
     >
-      <div className={classes.chipContent}>
+      <Text style={{color: textPrimary}}>
         {theme.colorScheme === 'dark' ? 'Light Theme' : 'Dark Theme'}
-        {
-          theme.colorScheme === 'dark'
-          ? <RiSunFill className={classes.icon} />
-          : <RiMoonFill className={classes.icon} />
-        }
-      </div>
-    </Chip>
+      </Text>
+      {theme.colorScheme === 'dark' && (<MdLightMode className={classes.icon} />)}
+      {theme.colorScheme === 'light' && (<MdDarkMode className={classes.icon} />)}
+    </Box>
   )
 }
 

@@ -1,48 +1,63 @@
-import { Avatar, Burger, Center, Grid, Header, Title, useMantineTheme } from '@mantine/core';
-import React from 'react'
-import { useBreakpoints } from '../../hooks/useBreakpoints';
-import { Callback } from '../../types/Callback';
-import { useStyles } from '../appContainer/styles';
+import { Burger, Center, Grid, Header, Sx, Title, useMantineTheme } from '@mantine/core';
+import React, { useMemo } from 'react'
+import { useDeviceSize } from '../../hooks/useDeviceSize';
+import { useContainerStyles } from '../appContainer/containerStyles';
 import ThemeToggle from '../appContainer/ThemeToggle';
 import NavDrawer from './NavDrawer';
 import { useDrawerState } from './useDrawerState';
 
 type Props = {
-  appName?: string;
-  avatarUrl?: string;
-  avatarAction?(): Callback<void>;
+  appName?: React.ReactNode;
+  avatar?: React.ReactNode;
+  className?: string;
   displayThemeToggle?: boolean;
   logo?: React.ReactNode;
   headerContent?: React.ReactNode;
-  navbarContent?: React.ReactNode;
+  drawerContent?: React.ReactNode;
+  sx?: Sx | (Sx | undefined)[];
 }
 
 const NavHeader = (props: Props) => {
-  const [drawerOpened, setDrawerOpened] = useDrawerState(state => [state.drawerOpened, state.setDrawerOpened]);
-  const breakpoints = useBreakpoints();
+  const [opened, setOpened] = useDrawerState(state => [state.opened, state.setOpened]);
+  const { deviceSize } = useDeviceSize();
+  const isSmall = useMemo<boolean>(() => ['xs', 'sm'].includes(deviceSize), [deviceSize]);
   const theme = useMantineTheme();
-  const { classes } = useStyles();
+  const { classes } = useContainerStyles();
+  const headerStyles = useMemo<Sx | (Sx | undefined)[]>(() => {
+    return {
+      color: theme.colorScheme === 'dark' ? '#fff' : '000',
+      position: 'sticky',
+      ...props.sx
+    }
+  }, [props.sx, theme])
+
+  const showBurger = useMemo<boolean>(() => {
+    if (isSmall) {
+      return props.avatar || props.drawerContent || props.displayThemeToggle ? true : false;
+    }
+
+    return props.drawerContent !== undefined;
+  }, [deviceSize, props])
 
   return (
     <Header
+      className={props.className}
       height='fit-content'
       p='md'
-      style={{color: theme.colorScheme === 'dark' ? theme.white : theme.black}}
+      sx={headerStyles}
     >
       <div style={{display: 'flex', alignItems: 'center', height: '100%', paddingRight: '1rem'}}>
-        <Burger 
-          opened={drawerOpened}
-          size='md'
-          color={theme.colorScheme === 'dark' ? theme.white : theme.black}
-          mr='xl'
-          onClick={() => setDrawerOpened(!drawerOpened)}
-        />
-        {breakpoints.breakpointExcludes(['xs', 'sm']) && (
-          <>
-          {props.logo}
-          </>
+        {showBurger && (
+          <Burger 
+            opened={opened}
+            onClick={() => setOpened(!opened)}
+            size='md'
+            color={theme.colorScheme === 'dark' ? theme.white : theme.black}
+            mr='xl'
+          />
         )}
-        {props.appName && breakpoints.breakpointExcludes(['xs', 'sm']) && (
+        {props.logo}
+        {props.appName && !isSmall && (
           <Center>
             <Title order={2} style={{marginLeft: '1rem'}}>
               {props.appName}
@@ -53,30 +68,21 @@ const NavHeader = (props: Props) => {
           {props.headerContent}
         </Grid>
         <Grid className={classes.toggleContent}>
-          {props.displayThemeToggle && breakpoints.breakpointExcludes(['xs', 'sm']) && (
+          {props.displayThemeToggle && !isSmall && (
             <ThemeToggle />
           )}
-          {props.avatarUrl && breakpoints.breakpointExcludes(['xs', 'sm']) && (
-            <Avatar 
-              src={props.avatarUrl}
-              size={45}
-              style={{marginRight: '1rem'}}
-            />
-          )}
-          {breakpoints.breakpointIncludes(['xs', 'sm']) && (
+          {props.avatar && !isSmall && (
             <>
-            {props.logo}
+            {props.avatar}
             </>
           )}
         </Grid>
       </div>
       <NavDrawer 
-        appName={props.appName}
-        avatarUrl={props.avatarUrl}
+        avatar={props.avatar}
         displayThemeToggle={props.displayThemeToggle}
-        isOpen={drawerOpened}
-        navbarContent={props.navbarContent}
-        onClose={() => setDrawerOpened(false)}
+        linkContent={props.drawerContent}
+        title={props.appName}
       />
     </Header>
   )

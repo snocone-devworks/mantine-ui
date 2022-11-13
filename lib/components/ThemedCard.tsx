@@ -1,122 +1,144 @@
-import { Card, Group, GroupPosition, MantineShadow, Text, Title, useMantineTheme } from '@mantine/core';
-import React, { useEffect, useState } from 'react'
-import { subscribeWithSelector } from 'zustand/middleware';
-import { ExpandButtonProps, useExpand } from '../hooks/useExpand';
-import { useThemeColors, useThemeContext } from '../theme';
-
-type Elevation = 1 | 2 | 3 | 4;
-
-type ExpandableProps = ExpandButtonProps & {
-  initialState?: boolean;
-}
+import { Card, Group, GroupPosition, MantineNumberSize, MantineShadow, Stack, Text, Title, useMantineTheme } from '@mantine/core';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useEffect, useMemo } from 'react'
+import { useExpansion } from '../hooks/useExpansion';
+import { useMantineUITheme } from '../hooks/useMantineUITheme';
+import { useThemeColors } from '../hooks/useThemeColors';
+import { ExpansionProps } from '../types';
 
 type Props = {
   action?: React.ReactNode;
   children: React.ReactNode;
-  elevation?: Elevation;
-  expandable?: boolean | ExpandableProps;
+  elevation?: 0 | 1 | 2 | 3 | 4;
+  expansion?: boolean | ExpansionProps;
+  radius?: MantineNumberSize;
   subtitle?: React.ReactNode;
   title?: React.ReactNode;
   style?: React.CSSProperties;
-  ref?: ((instance: HTMLDivElement | null) => void) | React.RefObject<HTMLDivElement> | null | undefined;
 }
 
-const ThemedCard = ({ action, children, elevation, expandable, subtitle, title, style, ref}: Props) => {
-  const theme = useMantineTheme();
-  const [shadow, setShadow] = useState<MantineShadow>('xs');
-  const [bg, setBg] = useState<string | undefined>(undefined);
-  const [headerPosition, setHeaderPosition] = useState<GroupPosition>('apart');
-  const { hasChanged, expanded, setExpanded, ExpandButton } = useExpand();
-  const { applyGradients } = useThemeContext();
+const shadows: MantineShadow[] = ['xs', 'sm', 'md', 'lg', 'xl'];
+
+const ThemedCard = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
   const { primary } = useThemeColors();
-
-  useEffect(() => {
-    if (typeof expandable === 'boolean' || hasChanged) return;
-    if (expandable?.initialState !== undefined) setExpanded(expandable.initialState);
-  }, [expandable])
-
-  useEffect(() => {
-    switch(elevation) {
-      case 2:
-        setShadow('md');
-        setBg(theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0]);
-        break;
-      case 3:
-        setShadow('lg');
-        setBg(theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1]);
-        break;      
-      case 4:
-        setShadow('xl');
-        setBg(theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]);
-        break;      
-      default:
-        setShadow('sm');
-        setBg(theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white);
-        break;        
+  const theme = useMantineTheme();
+  const initialExpandedState = useMemo<'collapsed' | 'expanded'>(() => {
+    if (!props.expansion) return 'expanded';
+    if (typeof props.expansion === 'boolean') return props.expansion === true ? 'expanded' : 'collapsed';
+    return props.expansion.initialState ? 'expanded' : 'collapsed';
+  }, [props.expansion])
+  const { expanded, setExpanded, hasChanged, ExpandButton } = useExpansion(initialExpandedState);
+  const { applyGradients } = useMantineUITheme();
+  const headerPosition = useMemo<GroupPosition>(() => {
+    if (props.subtitle || props.title) {
+      return props.action || props.expansion ? 'apart' : 'left';
     }
-  }, [elevation, theme])
+
+    return props.action || props.expansion ? 'right' : 'apart';
+  }, [props.action, props.subtitle, props.title, props.expansion])
+  const backgroundColor = useMemo<string>(() => {
+    const styleColor = props.style?.backgroundColor;
+    const themeColor = theme.colorScheme === 'dark' ? theme.colors.dark : theme.colors.gray;
+
+    if (props.elevation === 0) {
+      return styleColor ?? themeColor[theme.colorScheme === 'dark' ? 8 : 0];
+    }
+
+    if (props.elevation === 2) {
+      return styleColor ?? themeColor[theme.colorScheme === 'dark' ? 6 : 0];
+    }
+
+    if (props.elevation === 3) {
+      return styleColor ?? themeColor[theme.colorScheme === 'dark' ? 5 : 0];
+    }
+
+    if (props.elevation === 4) {
+      return styleColor ?? themeColor[theme.colorScheme === 'dark' ? 4 : 0];
+    }
+
+    return styleColor ?? theme.colorScheme === 'dark' ? themeColor[7] : theme.white;
+  }, [props.elevation, theme, props.style])
 
   useEffect(() => {
-    if (subtitle || title) {
-      setHeaderPosition(action || expandable ? 'apart' : 'left');
-    } else if (action || expandable) {
-      setHeaderPosition('right');
-    }
-  }, [action, subtitle, title, expandable])
+    if (typeof props.expansion === 'boolean' || hasChanged) return;
+    if (props.expansion?.initialState !== undefined) setExpanded(props.expansion.initialState === 'expanded');
+  }, [props.expansion])
 
   return (
     <Card
       ref={ref}
-      shadow={shadow}
-      radius={'md'}
-      style={style ? {...style, backgroundColor: bg} : {width: '100%', backgroundColor: bg}}
+      shadow={shadows[props.elevation ?? 0]}
+      radius={props.radius}
+      style={props.style ? {...props.style, backgroundColor: backgroundColor} : { width: '100%', backgroundColor: backgroundColor}}
     >
-      {(title || subtitle || action || expandable) && (
+      {(props.title || props.subtitle || props.action || props.expansion) && (
         <Group
-          direction='row'
           align='flex-start'
           position={headerPosition}
-          style={{marginBottom: '1rem', gap: '0.2rem'}}
+          noWrap
+          style={{gap: '0.2rem'}}
         >
-          {(title || subtitle) && (
-            <Group direction='column' style={{gap: '0.2rem'}}>
-              <Title order={4} style={{ color: primary }}>
-                {title}
-              </Title>
-              <Text size='sm'>
-                {subtitle}
-              </Text>
-            </Group>
-          )}
-          {(action || expandable) && (
-            <Group style={{gap: '0.2rem'}}>
-              {action && (
+          {(props.title || props.subtitle) && (
+            <Stack style={{gap: '0.2rem', flexWrap: 'wrap'}}>
+              {typeof props.title === 'string' && (
+                <Title order={4} style={{color: primary}}>
+                  {props.title}
+                </Title>
+              )}
+              {typeof props.title !== 'string' && (
                 <>
-                {action}
+                {props.title}
                 </>
               )}
-              {expandable && (
-                <ExpandButton 
-                  color={typeof expandable === 'boolean' ? undefined : expandable.color}
-                  size={typeof expandable === 'boolean' ? undefined : expandable.size}
-                  radius={typeof expandable === 'boolean' ? undefined : expandable.radius}
-                  variant={typeof expandable !== 'boolean' ? expandable.variant : applyGradients ? 'gradient' : 'filled'}
-                  iconSize={typeof expandable === 'boolean' ? undefined : expandable.iconSize}
+              {typeof props.subtitle === 'string' && (
+                <Text size='sm'>
+                  {props.title}
+                </Text>
+              )}
+              {typeof props.subtitle !== 'string' && (
+                <>
+                {props.title}
+                </>
+              )}
+            </Stack>
+          )}
+          {(props.action || props.expansion) && (
+            <Group style={{gap: '0.2rem'}}>
+              {props.action}
+              {props.expansion && (
+                <ExpandButton                
+                  className={typeof props.expansion === 'boolean' ? undefined : props.expansion.className}
+                  color={typeof props.expansion === 'boolean' ? 'primary' : props.expansion.color}
+                  iconSize={typeof props.expansion === 'boolean' ? undefined : props.expansion.size}
+                  radius={typeof props.expansion === 'boolean' ? undefined : props.expansion.radius}
+                  size={typeof props.expansion === 'boolean' ? undefined : props.expansion.size}
+                  style={typeof props.expansion === 'boolean' ? undefined : props.expansion.style}
+                  variant={typeof props.expansion === 'boolean' ? undefined : props.expansion.variant}
                 />
               )}
             </Group>
           )}
         </Group>
       )}
-      <Card.Section style={{padding: '0rem 0.6rem 1rem 0.6rem'}}>
-        {(!expandable || expanded) && (
-          <>
-          {children}
-          </>
-        )}
-      </Card.Section>
+      <AnimatePresence mode='sync'>
+        <motion.div
+          key={String(expanded)}
+          initial={{ opacity: 0, height: 0}}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          {(!props.expansion || expanded) && (
+            <>
+            {props.children}
+            </>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </Card>
   )
-}
+});
+
+ThemedCard.displayName = 'ThemedCard';
 
 export default ThemedCard

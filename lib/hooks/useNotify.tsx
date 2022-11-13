@@ -1,36 +1,36 @@
 import { MantineColor } from "@mantine/core";
-import { useNotifications } from "@mantine/notifications";
+import { hideNotification, showNotification, updateNotification } from "@mantine/notifications";
 import React from "react";
-import { RiErrorWarningFill, RiInformationFill, RiThumbUpFill } from "react-icons/ri";
-import { useThemeContext } from "../theme";
-import { fixMessage } from "../theme/helpers";
-import { NotifyType } from "../theme/types";
+import { v4 as uuidv4 } from 'uuid';
+import { fixedMessage } from "../theme/defaults";
+import { NotifyType } from "../types";
+import { useMantineUITheme } from "./useMantineUITheme";
 
-export type NotifyReturnType = {
+export type NotifyReturn = {
   id: string;
-  dismiss(): void;
-  update(type: NotifyType, message: React.ReactNode, persist?: boolean): void;
+  dismiss(): void | Promise<void>;
+  update(type: NotifyType, message: React.ReactNode, persist?: boolean): void | Promise<void>;
 }
 
 export const useNotify = () => {
-  const notifications = useNotifications();
-  const themeInfo = useThemeContext();
+  const themeInfo = useMantineUITheme();
 
-  if (!themeInfo || !notifications) {
-    throw new Error('useNotify must be within a ThemeProvider');
+  if (!themeInfo) {
+    throw new Error('useNotify must be within a MantineUIThemeProvider');
+    return;
   }
 
   const color = (type: NotifyType): MantineColor => {
     if (type === 'error') return themeInfo.colors.error;
     if (type === 'info' || type === 'loading') return themeInfo.colors.info;
     if (type === 'success') return themeInfo.colors.success;
-    return themeInfo.colors.primary;
+    return themeInfo.colors.brand;
   }
 
   const icon = (type: NotifyType): React.ReactNode | undefined => {
-    if (type === 'error') return themeInfo.notify.icons.error ?? <RiErrorWarningFill />;
-    if (type === 'info') return themeInfo.notify.icons.info ?? <RiInformationFill />;
-    if (type === 'success') return themeInfo.notify.icons.success ?? <RiThumbUpFill />;
+    if (type === 'error') return themeInfo.notify.icons.error;
+    if (type === 'info') return themeInfo.notify.icons.info;
+    if (type === 'success') return themeInfo.notify.icons.success;
     return undefined;
   }
 
@@ -43,20 +43,22 @@ export const useNotify = () => {
       if (type === 'loading' && wrappers.loading) return wrappers.loading(message);
       if (type === 'success' && wrappers.success) return wrappers.success(message);
 
-      return fixMessage(message);
+      return (
+        <>
+          {fixedMessage(message)}
+        </>
+      );
     }
 
     return message;
   }
 
-  const titleText = (type: NotifyType): string => String(type).charAt(0) + String(type).slice(1);
-
-  const onDismiss = (id: string) => notifications.hideNotification(id);
+  const onDismiss = (id: string) => hideNotification(id);
 
   const onUpdate = (id: string, type: NotifyType, message: React.ReactNode, persist?: boolean) => {
-    notifications.updateNotification(id, {
+    updateNotification({
       id: id,
-      title: titleText(type),
+      title: `${type.charAt(0).toUpperCase()}${type.slice(1)}`,
       message: messageText(type, message),
       color: color(type),
       icon: icon(type),
@@ -66,23 +68,30 @@ export const useNotify = () => {
     });
   }
 
-  const notify = (type: NotifyType, message: React.ReactNode, persist?: boolean): NotifyReturnType => ({
-    id: notifications.showNotification({
-      title: titleText(type),
+  const notify = (type: NotifyType, message: React.ReactNode, persist?: boolean): NotifyReturn => {
+    let id: string = uuidv4();
+
+    showNotification({
+      id: id,
+      title: `${type.charAt(0).toUpperCase()}${type.slice(1)}`,
       message: messageText(type, message),
       color: color(type),
       icon: icon(type),
       disallowClose: type === 'loading',
       loading: type === 'loading',
-      autoClose: persist ? false : true
-    }),
-    dismiss: function() {
-      onDismiss(this.id)
-    },
-    update: function(type: NotifyType, message: string, persist?: boolean) {
-      onUpdate(this.id, type, message, persist)
+      autoClose: persist === true ? false : true
+    });
+
+    return {
+      id: id,
+      dismiss: function() {
+        onDismiss(this.id)
+      },
+      update: function(type: NotifyType, message: React.ReactNode, persist?: boolean) {
+        onUpdate(this.id, type, message, persist)
+      }
     }
-  });
+  };
 
   return notify;
 }

@@ -6,16 +6,17 @@
   "repository": {
     "url": "https://github.com/snocone-devworks/mantine-ui"
   },
+  "type": "module",
   "files": [
     "dist"
   ],
-  "types": "./dist/lib/index.d.ts",
-  "main": "./dist/mantine-ui.umd.js",
-  "module": "./dist/mantine-ui.mjs",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/mantine-ui.cjs",
+  "module": "./dist/mantine-ui.js",
   "exports": {
     ".": {
-      "import": "./dist/mantine-ui.mjs",
-      "require": "./dist/mantine-ui.umd.js"
+      "import": "./dist/mantine-ui.js",
+      "require": "./dist/mantine-ui.umd.cjs"
     }
   },
   "engines": {
@@ -29,39 +30,27 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@mantine/core": "^4.2.12",
-    "@mantine/dates": "^4.2.12",
-    "@mantine/hooks": "^4.2.12",
-    "@mantine/notifications": "^4.2.12",
-    "dayjs": "^1.11.3",
+    "@emotion/react": "^11.10.5",
+    "@mantine/core": "^5.7.2",
+    "@mantine/dates": "^5.7.2",
+    "@mantine/hooks": "^5.7.2",
+    "@mantine/notifications": "^5.7.2",
+    "dayjs": "^1.11.6",
+    "framer-motion": "^7.6.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.4.0",
-    "react-router-dom": "^6.3.0",
+    "react-icons": "^4.6.0",
+    "react-router-dom": "^6.4.3",
+    "uuid": "^9.0.0",
     "zustand": "^3.7.2"
   },
   "devDependencies": {
-    "@testing-library/react": "^13.3.0",
-    "@types/node": "^18.0.4",
-    "@types/react": "^18.0.15",
-    "@types/react-dom": "^18.0.6",
-    "@types/react-router-dom": "^5.3.3",
-    "@typescript-eslint/eslint-plugin": "^5.30.6",
-    "@typescript-eslint/parser": "^5.30.6",
-    "@vitejs/plugin-react": "^2.0.0",
-    "eslint": "^8.20.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsx-a11y": "^6.6.0",
-    "eslint-plugin-react": "^7.30.1",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-simple-import-sort": "^7.0.0",
-    "identity-obj-proxy": "^3.0.0",
-    "prettier": "^2.7.1",
-    "typescript": "^4.7.4",
-    "vite": "^3.0.0",
-    "vite-plugin-dts": "^1.3.0",
-    "vite-plugin-svgr": "^2.2.0",
-    "vitest": "^0.18.0"
+    "@types/react": "^18.0.24",
+    "@types/react-dom": "^18.0.8",
+    "@types/uuid": "^8.3.4",
+    "@vitejs/plugin-react": "^2.2.0",
+    "typescript": "^4.6.4",
+    "vite": "^3.2.3",
+    "vite-plugin-dts": "^1.7.0"
   }
 }
