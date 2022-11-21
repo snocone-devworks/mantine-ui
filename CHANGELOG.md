@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- AppContainer component now has a `drawerTitle` prop that accepts a `React.ReactNode` value. Passing this will add a title of the contents passed to the nav drawer.
+
 ## 1.1.1 - 2022-11-21
 ### Fixed
 - useDeviceSize hook wasn't properly setting the height and width on initialization. This should now be fixed.
