@@ -1,5 +1,5 @@
 import { Burger, Center, Grid, Header, Sx, Title, useMantineTheme } from '@mantine/core';
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useDeviceSize } from '../../hooks/useDeviceSize';
 import { useContainerStyles } from '../appContainer/containerStyles';
 import ThemeToggle from '../appContainer/ThemeToggle';
