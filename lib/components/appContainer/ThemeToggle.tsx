@@ -15,13 +15,21 @@ const ThemeToggle = () => {
 
   if (['xs', 'sm'].includes(deviceSize)) {
     return (
-      <Group style={{gap: '0rem'}}>
+      <Group align='center' style={{gap: '0.4rem'}}>
         <MdLightMode className={classes.smallIcon} style={{color: theme.colors.yellow[5]}} />
         <Switch 
           checked={true}
           size='md'
           color={theme.colorScheme === 'dark' ? 'violet' : 'yellow'}
-          style={{marginLeft: '0.6rem', transform: theme.colorScheme === 'light' ? 'rotate(180deg)' : undefined}}
+          styles={{
+            root: {
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }
+          }}
+          style={{transform: theme.colorScheme === 'light' ? 'rotate(180deg)' : undefined}}
           onClick={() => toggleColorScheme()}
         />
         <MdDarkMode className={classes.smallIcon} style={{color: theme.colors.violet[5]}} />

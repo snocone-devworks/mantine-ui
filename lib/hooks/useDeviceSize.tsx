@@ -26,6 +26,8 @@ export const useDeviceSize = () => {
       setWidth(window.innerWidth);
     }
 
+    setHeight(window.innerHeight);
+    setWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [])
