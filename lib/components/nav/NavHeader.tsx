@@ -11,6 +11,7 @@ type Props = {
   avatar?: React.ReactNode;
   className?: string;
   displayThemeToggle?: boolean;
+  drawerTitle?: React.ReactNode;
   logo?: React.ReactNode;
   headerContent?: React.ReactNode;
   drawerContent?: React.ReactNode;
@@ -82,7 +83,7 @@ const NavHeader = (props: Props) => {
         avatar={props.avatar}
         displayThemeToggle={props.displayThemeToggle}
         linkContent={props.drawerContent}
-        title={props.appName}
+        title={props.drawerTitle}
       />
     </Header>
   )

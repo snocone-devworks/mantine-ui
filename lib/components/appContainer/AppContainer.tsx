@@ -13,6 +13,7 @@ type AppContainerProps = {
   avatar?: React.ReactNode;
   closeAfterRoute?: boolean;
   displayThemeToggle?: boolean;
+  drawerTitle?: React.ReactNode;
   logo?: React.ReactNode;
   headerContent?: React.ReactNode;
   navbarContent?: React.ReactNode;
@@ -74,6 +75,7 @@ const AppContainer = (props: AppContainerProps) => {
         avatar={props.avatar}
         className={props.headerClassName}
         displayThemeToggle={props.displayThemeToggle}
+        drawerTitle={props.drawerTitle}
         logo={props.logo}
         headerContent={props.headerContent}
         drawerContent={props.navbarContent}
