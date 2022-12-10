@@ -26,6 +26,7 @@ export type ExpansionButtonProps = {
 }
 
 export type ThemeColor = 'brand' | 'error' | 'info' | 'primary' | 'secondary' | 'success' | 'textPrimary' | 'warn';
+export type ThemeGradient = 'brand' | 'error' | 'info' | 'primary' | 'secondary' | 'success' | 'warn';
 export type NotifyType = 'error' | 'info' | 'loading' | 'success';
 export type NotifyPosition = 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
 export type MessageWrapper = (message: string) => string;
@@ -63,6 +64,7 @@ export type NotifyConfig = {
 export type ColorConfig = Record<ThemeColor, MantineColor>;
 export type GradientConfig = Record<ThemeColor, MantineGradient>;
 export type Colors = Record<ThemeColor, string>;
+export type Gradients = Record<ThemeGradient, { from: string, to: string }>;
 
 export type MantineUIThemeContext = {
   applyGradients: boolean;

@@ -12,6 +12,7 @@ import { useExpansion } from "./hooks/useExpansion"
 import { useMantineUITheme } from "./hooks/useMantineUITheme"
 import { useNotify } from "./hooks/useNotify"
 import { useThemeColors } from "./hooks/useThemeColors"
+import { useThemeGradients } from "./hooks/useThemeGradients"
 import { MantineUIThemeContextInfo, MantineUIThemeProvider } from "./theme/Context"
 import { BreakpointName, ColorConfig, Colors, ExpansionButtonProps, ExpansionProps, GradientConfig, IconsConfig, MantineUIThemeContext, MantineUIThemeProviderProps, MessageWrapper, MessageWrappersConfig, MotionConfig, NotifyConfig, NotifyPosition, NotifyType, ThemeColor } from "./types"
 
@@ -33,6 +34,7 @@ export {
   useMantineUITheme,
   useNotify,
   useThemeColors,
+  useThemeGradients,
 
   // theme
   MantineUIThemeProvider,

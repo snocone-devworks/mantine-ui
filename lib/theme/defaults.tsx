@@ -5,7 +5,7 @@ import { ColorConfig, GradientConfig, NotifyConfig } from "../types";
 export const defaultColors: ColorConfig = {
   brand: 'cyan',
   error: 'red',
-  info: 'violet',
+  info: 'grape',
   primary: 'blue',
   secondary: 'pink',
   success: 'teal',
@@ -16,11 +16,11 @@ export const defaultColors: ColorConfig = {
 export const defaultGradients: GradientConfig = {
   brand: { from: 'cyan', to: 'grape' },
   error: { from: 'red', to: 'pink' },
-  info: { from: 'violet', to: 'grape' },
-  primary: { from: 'cyan', to: 'indigo' },
+  info: { from: 'grape', to: 'indigo' },
+  primary: { from: 'indigo', to: 'cyan' },
   secondary: { from: 'pink', to: 'violet' },
   success: { from: 'cyan', to: 'green' },
-  warn: { from: 'yellow', to: 'orange' },
+  warn: { from: 'pink', to: 'yellow' },
   textPrimary: { from: 'black', to: 'black' }
 }
 
