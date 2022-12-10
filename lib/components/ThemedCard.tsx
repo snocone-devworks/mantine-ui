@@ -92,12 +92,12 @@ const ThemedCard = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
               )}
               {typeof props.subtitle === 'string' && (
                 <Text size='sm'>
-                  {props.title}
+                  {props.subtitle}
                 </Text>
               )}
               {typeof props.subtitle !== 'string' && (
                 <>
-                {props.title}
+                {props.subtitle}
                 </>
               )}
             </Stack>

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+
+- Typo in logic for ThemedCard causing the title to display twice and the subtitle to not display. The title will now correctly display only once while also displaying the subtitle should it be passed as a prop.
+
 ## 1.2.0 - 2022-11-21
 ### Added
 - AppContainer component now has a `drawerTitle` prop that accepts a `React.ReactNode` value. Passing this will add a title of the contents passed to the nav drawer.
