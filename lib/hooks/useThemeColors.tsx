@@ -27,22 +27,23 @@ export const useThemeColors = () => {
   const theme = useMantineTheme();
   const uiTheme = useMantineUITheme();
   const colors = useMemo<Colors>(() => {
-    const scheme = uiTheme.colorScheme;
     if (!uiTheme) return {...defaultColors};
     if (!theme) return {...defaultColors};
 
     const index = theme.colorScheme === 'dark' ? 5 : 7;
 
-    return {
+    let returnItem = {
       brand: getMantineColor(theme, uiTheme.colors.brand, index),
       error: getMantineColor(theme, uiTheme.colors.error, index),
-      info: getMantineColor(theme, uiTheme.colors.error, index),
-      primary: getMantineColor(theme, uiTheme.colors.error, index),
-      secondary: getMantineColor(theme, uiTheme.colors.error, index),
-      success: getMantineColor(theme, uiTheme.colors.error, index),
+      info: getMantineColor(theme, uiTheme.colors.info, index),
+      primary: getMantineColor(theme, uiTheme.colors.primary, index),
+      secondary: getMantineColor(theme, uiTheme.colors.secondary, index),
+      success: getMantineColor(theme, uiTheme.colors.success, index),
       textPrimary: theme.colorScheme === 'dark' ? theme.white : theme.black,
-      warn: getMantineColor(theme, uiTheme.colors.error, index),
+      warn: getMantineColor(theme, uiTheme.colors.warn, index),
     }
+
+    return returnItem;
   }, [theme, uiTheme]);
 
   if (!uiTheme) throw new Error('useThemeColors must be used within a MantineUIThemeProvider');
