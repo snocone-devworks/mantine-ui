@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- `useThemeGradients` hook is now available. This hook will expose the theme gradients for use within the application.
+
+### Fixed
+
+- updated colors for `useThemeColors`. Prior colors were all error color.
+
 ## 1.2.1 - 2022-12-10
 ### Fixed
 - Typo in logic for ThemedCard causing the title to display twice and the subtitle to not display. The title will now correctly display only once while also displaying the subtitle should it be passed as a prop.
